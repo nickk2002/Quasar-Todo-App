@@ -1,4 +1,6 @@
 <script>
+import {date} from "quasar"
+
 
 export default ({
   name: "Todo-Task",
@@ -18,8 +20,18 @@ export default ({
     },
     duplicateTask() {
       this.$emit("duplicate", this.todo);
+    },
+    convertDateToTime(dateToFormat){
+      if(dateToFormat.length <= 5) {
+        return dateToFormat;
+      }
+      console.log("Ceonvert " + dateToFormat + " to " + date.formatDate(dateToFormat, "HH:mm"));
+      return date.formatDate(dateToFormat, "HH:mm");
     }
   },
+  computed:{
+
+  }
 });
 </script>
 
@@ -29,23 +41,23 @@ export default ({
     :class="{ 'animate-task': animate === true}"
     class="no-padding task"
     clickable
-    style="margin-bottom: 40px"
+    style="margin-bottom: 30px"
   >
     <q-item-section class="task-icon" side>
-      <q-icon :name="todo.icon" size="40px"/>
+      <q-icon :name="'img:/icons/' + todo.icon + '.svg'" size="30px"/>
     </q-item-section>
-    <q-item-section>
+    <q-item-section class="col" style="margin-left:10px">
       <q-item-section class="q-pl-md task-name no-pointer-events"> {{ todo.name }}</q-item-section>
       <q-item-section class="q-pl-md todo-description no-pointer-events row">
         <div class="row task-information">
             <span class="task-time">
-              {{ todo.time }}
+              {{ convertDateToTime(todo.time) }}
             </span>
           <div style="background-color: var(--q-accent); width: 1px; height: 0; margin-right: 10px;
                 margin-top: 5px; padding-bottom: 15px;">
           </div>
           <span v-if="todo.weight" class="task-weight">
-            {{ todo.weight }}
+            Weight: {{ todo.weight }}
           </span>
         </div>
       </q-item-section>
@@ -99,9 +111,9 @@ export default ({
   display: flex;
   align-items: center;
   background-color: #919699;
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
 }
 
 .task{
@@ -110,15 +122,14 @@ export default ({
   align-items: center;
 }
 .task-name {
-  font-size: 30px;
-  padding-top: 2px;
-  display: flex;
-  justify-content: flex-end;
+  font-size: 20px;
+  padding: 0 !important;
 }
 
 .todo-description {
-  margin: 0 !important;
-  font-size: 0.8em;
+  margin:0;
+  padding: 0;
+  font-size: 10px;
   justify-content: flex-start;
 }
 
@@ -142,7 +153,7 @@ export default ({
 .task-name {
   padding-top: 10px;
   color: #E3E5E5;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 400;
   text-align: left;
 }

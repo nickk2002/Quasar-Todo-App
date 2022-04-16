@@ -10,5 +10,7 @@ export default defineComponent({
 });
 </script>
 <style>
-
+body{
+  /*font-family: Exo,serif*/
+}
 </style>
