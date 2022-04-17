@@ -44,71 +44,9 @@
         </div>
       </div>
       <div class="tasks-today">Tasks Today</div>
-      <q-btn dense flat icon="add" round @click="dialog=true; putNowDate()"/>
+      <q-btn dense flat icon="add" round @click="dialog=true;"/>
       <q-dialog v-model="dialog">
-        <q-card class="dialog" style="max-width: 1500px;width:1000px;height:600px">
-          <q-list style="padding-left: 40px; padding-top: 40px">
-            <q-item style="padding-bottom: 0 !important;">
-              <div class="row">
-                <q-input v-model="taskTitle" :input-style="{ color: '#E3E5E5A1' }" autofocus borderless
-                         class="new-task-name "
-                         placeholder="Task Name"
-                />
-              </div>
-            </q-item>
-            <q-item style="height: 20px; padding-top: 0 !important;">
-              <q-input borderless v-model="taskDate" :input-style="{ color: '#E3E5E5A1' }">
-                <template v-slot:before>
-                  <div class="event-icon">
-                    <q-icon name="event" size="15px"  clickable style="margin-right: 5px;">
-                      <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <div class="row">
-                          <q-date color="indigo-10" v-model="taskDate" dark mask="D MMMM YYYY - HH:mm">
-                          </q-date>
-                          <q-time v-model="taskDate" mask="D MMMM YYYY - HH:mm" format24h>
-                          </q-time>
-                        </div>
-
-                      </q-popup-proxy>
-                    </q-icon>
-                  </div>
-                  <span style="font-size:15px; color: #78909C; ">Due date:</span>
-                </template>
-              </q-input>
-            </q-item>
-
-            <q-item style="padding-top: 20px;">
-              <div style="font-size:20px; color: #78909C; ">Task type: <span style="color:#E3E5E5A1"> {{ taskType }} </span></div>
-            </q-item>
-            <q-item>
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-column-gap:20px; grid-row-gap: 10px">
-                <TaskType color="#78909C" text="Study" @click="taskType='Study'"></TaskType>
-                <TaskType color="#9C7890" text="Music" @click="taskType='Music'"></TaskType>
-                <TaskType color="#8A9C78" text="Hobby" @click="taskType='Hobby'" ></TaskType>
-                <TaskType color="#3B557D" text="Swim" @click="taskType='Swim'" ></TaskType>
-                <TaskType color="#5B533E" text="Cook" @click="taskType='Cook'" ></TaskType>
-
-                <TaskType color="#B4B4B4" text="Other" @click="taskType='Other'"></TaskType>
-                <div  style="width:25px; height: 25px;
-                        background-color: rgba(227, 229, 229, 0.63); border-radius: 5px; display: flex; justify-content: center; align-items: center">
-                  <q-icon name  ="img:/icons/add.svg" size="15px"></q-icon>
-                </div>
-              </div>
-            </q-item>
-            <q-item style="padding-top: 20px;">
-              <q-input  autogrow v-model="taskDescription" :input-style="{color: '#E3E5E5A1' }" autofocus borderless
-                        class="description"
-                       placeholder="Description..."
-              />
-            </q-item>
-            <q-item>
-              <q-btn text-color="secondary" v-ripple v-close-popup @click="addTask">Create Task</q-btn>
-
-            </q-item>
-
-          </q-list>
-
-        </q-card>
+        <AddTaskDialog @addTask="addTask"></AddTaskDialog>
       </q-dialog>
       <q-list style="max-width: 500px;">
         <TodoTask
@@ -168,38 +106,20 @@
   font-size: 20px;
 }
 
-.dialog {
 
-  background-color: #303030;
-}
-
-.new-task-name {
-  font-weight: 400;
-  font-size: 30px;
-}
-.event-icon{
-  margin-bottom: 3px;
-  color:#78909C;
-}
-.event-icon:hover{
-  color: #8ea6af;
-}
-.description{
-  font-size: 20px;
-}
 
 </style>
 <script>
 import {date, useQuasar} from "quasar";
 import TodoTask from "../components/Task.vue"
-import TaskType from "../components/TaskType"
+import AddTaskDialog from "../components/AddTaskDialog"
 
 export default ({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Todo",
   components: {
     TodoTask,
-    TaskType,
+    AddTaskDialog,
   },
   beforeCreate() {
     this.id = 0;
@@ -207,7 +127,7 @@ export default ({
   data() {
     return {
       q: useQuasar(),
-      dialog: false,
+      dialog: true,
       todos: [
         {
           id: ++this.id,
@@ -236,11 +156,6 @@ export default ({
       ],
       tasksToday: 3,
       tasksDone: 0,
-      taskTitle: "",
-      taskType: "",
-      taskDescription: "",
-      taskDate: date.formatDate(Date.now(), "D MMMM YYYY - HH:mm"),
-      taskWeight: 1,
     };
   },
   methods: {
@@ -276,20 +191,11 @@ export default ({
       this.todos.unshift(newTask);
       this.tasksToday++;
     },
-    addTask() {
+    addTask(task) {
       this.showConfirmTaskAdded();
       this.tasksToday++;
-      this.todos.push({
-        id: ++this.id,
-        name: this.taskTitle,
-        description: this.description,
-        icon: this.taskType,
-        time: this.taskDate,
-      });
-    },
-    putNowDate() {
-      console.log("Putting date" + date.formatDate(Date.now(), "D/M/YYYY"));
-      // this.date = date.formatDate(Date.now(),"YYYY/D/M");
+      task.id = ++this.id;
+      this.todos.push(task);
     },
     getFormattedDate() {
       return date.formatDate(Date.now(), "D MMMM YYYY");

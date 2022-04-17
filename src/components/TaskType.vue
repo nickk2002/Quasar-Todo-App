@@ -27,7 +27,6 @@ export default {
   name: "TaskType",
   computed: {
     cssProps(){
-      console.log("Calling the method with" + this.color + " " + this.width + " " + this.height);
       return{
         "--color": this.color,
         "--width": this.width + "px",
