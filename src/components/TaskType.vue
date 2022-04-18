@@ -1,7 +1,7 @@
 <!--suppress ALL -->
 <template>
-  <q-btn class="task-type" :style="cssProps" clickable >
-    {{ text }}
+  <q-btn class="task-type" :style="cssProps" clickable no-caps >
+    {{ capitalized }}
   </q-btn>
 </template>
 
@@ -21,7 +21,8 @@ export default {
       default: "78909C",
     },
     text:{
-      default: "Type"
+      default: "Type",
+      type: String,
     }
   },
   name: "TaskType",
@@ -33,21 +34,28 @@ export default {
         "--height": this.height + "px",
         "--font-size": this.font_size + "px",
       }
+    },
+    capitalized(){
+      const other = this.text;
+      return other.charAt(0).toUpperCase() + other.slice(1);
     }
   }
 }
 </script>
 
 <style scoped>
+
 .task-type{
   width: var(--width);
   height: var(--height);
+  font-weight: 500;
   background-color: var(--color);
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: var(--font-size);
   border-radius:5px;
+  text-color: black;
 }
 
 </style>

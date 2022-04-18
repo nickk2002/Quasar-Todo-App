@@ -16,7 +16,6 @@
               style="width: 142px; height:40px; ">
               <q-item-section side>
                 <q-icon color="red" size="20px" :name="'img:/icons/' + menuItem.icon + '.svg'"/>
-
               </q-item-section>
               <q-item-section side>
                 {{ menuItem.label }}
