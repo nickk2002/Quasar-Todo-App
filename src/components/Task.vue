@@ -4,10 +4,11 @@ import {date} from "quasar"
 
 export default ({
   name: "Todo-Task",
-  props: ["todo", "deleteCallback"],
+  props: ["todo"],
   data() {
     return {
       animate: false,
+      edit:false,
     };
   },
   methods: {
@@ -21,16 +22,18 @@ export default ({
     duplicateTask() {
       this.$emit("duplicate", this.todo);
     },
-    convertDateToTime(dateToFormat){
-      if(dateToFormat.length <= 5) {
-        return dateToFormat;
-      }
-      console.log("Ceonvert " + dateToFormat + " to " + date.formatDate(dateToFormat, "HH:mm"));
-      return date.formatDate(dateToFormat, "HH:mm");
+    sendEditRequest(){
+      this.$emit("edit",this.todo);
     }
   },
   computed:{
-
+    convertDateToTime(){
+      const dateToFormat = this.todo.time;
+      if(dateToFormat.length <= 5) {
+        return dateToFormat;
+      }
+      return date.formatDate(dateToFormat, "HH:mm");
+    },
   }
 });
 </script>
@@ -47,14 +50,13 @@ export default ({
       <q-icon :name="'img:/icons/' + todo.icon + '.svg'" size="30px"/>
     </q-item-section>
     <q-item-section class="col" style="margin-left:10px">
-      <q-item-section class="q-pl-md task-name no-pointer-events"> {{ todo.name }}</q-item-section>
-      <q-item-section class="q-pl-md todo-description no-pointer-events row">
+      <q-item-section class="task-name"> {{ todo.name }}</q-item-section>
+      <q-item-section class="todo-description row">
         <div class="row task-information">
             <span class="task-time">
-              {{ convertDateToTime(todo.time) }}
+              {{ convertDateToTime }}
             </span>
-          <div style="background-color: var(--q-accent); width: 1px; height: 0; margin-right: 10px;
-                margin-top: 5px; padding-bottom: 15px;">
+          <div style="background-color: var(--q-accent); width: 1px; height: 15px; margin: 0 15px 0 15px; ">
           </div>
           <span v-if="todo.weight" class="task-weight">
             Weight: {{ todo.weight }}
@@ -70,6 +72,7 @@ export default ({
         <q-menu
           anchor="bottom left"
           auto-close
+          dark
           class="option-menu">
           <q-list>
             <q-item clickable>
@@ -78,9 +81,10 @@ export default ({
               </q-item-section>
               <q-item-section>Mark done</q-item-section>
             </q-item>
-            <q-item class="row" clickable>
+            <q-item class="row" clickable @click="sendEditRequest" >
               <q-item-section avatar style="min-width: 0;">
                 <q-icon name="edit"/>
+
               </q-item-section>
               <q-item-section>Edit</q-item-section>
             </q-item>
@@ -122,15 +126,13 @@ export default ({
   align-items: center;
 }
 .task-name {
+  color: #E3E5E5;
   font-size: 20px;
-  padding: 0 !important;
 }
 
 .todo-description {
   margin:0;
   padding: 0;
-  font-size: 10px;
-  justify-content: flex-start;
 }
 
 @keyframes task-done-keyframes {
@@ -150,18 +152,12 @@ export default ({
   animation: ease-out task-done-keyframes 1s;
 }
 
-.task-name {
-  padding-top: 10px;
-  color: #E3E5E5;
-  font-size: 20px;
-  font-weight: 400;
-  text-align: left;
+.task-information{
+  margin-top:10px;
 }
-
 .task-information > .task-time {
   color: #78909C;
   font-size: 15px;
-  padding-right: 10px;
 }
 
 .task-information > .task-weight {
@@ -172,7 +168,6 @@ export default ({
 .more_icon {
   color: $secondary;
 }
-
 
 .option-menu .q-icon {
   font-size: 20px;
