@@ -4,7 +4,9 @@
       <div class="row">
         <div class="col-7">
           <div class="heading">Tasks & Issues</div>
-          <div class="day" style="font-size:20px; padding-left: 2px; padding-top: 10px; color: #ACAEAF">{{ getFormattedDate() }}</div>
+          <div class="day" style="font-size:20px; padding-left: 2px; padding-top: 10px; color: #ACAEAF">
+            {{ getFormattedDate() }}
+          </div>
           <!--Boards-->
           <div class="row">
             <div class="board">
@@ -56,15 +58,16 @@
               :key="todo.id"
               v-for:="todo in sortedArray"
               :todo="todo"
-              @delete="completeTask"
+              @complete="completeTask"
+              @delete="deleteTask"
               @duplicate="duplicateToDo"
               @edit="putTaskToEditInVar"
               @click.self="putTaskToEditInVar(todo)"/>
           </q-list>
         </div>
-        <div class="col-4">
-          <div class="heading"  style="margin-bottom: 50px;">Tasks Calendar</div>
-          <div v-for:="calendarTodo in dayArray">
+        <div class="col-4" v-if="this.todos.length > 0">
+          <div class="heading" style="margin-bottom: 50px;">Tasks Calendar</div>
+          <div :key="calendarTodo" v-for:="calendarTodo in dayArray">
             <div class="tasks-today q-mb-md" style="margin-top: 40px">{{ calendarTodo.day }}</div>
             <q-list>
               <CalendarEntry
@@ -73,13 +76,8 @@
                 :todo="todo"/>
             </q-list>
           </div>
-
-
         </div>
-
       </div>
-
-
     </q-page>
   </div>
 </template>
@@ -184,31 +182,36 @@ export default ({
     };
   },
   methods: {
-    showConfirmTaskAdded() {
+    showConfirmTaskAdded(name) {
       this.q.notify({
-        progress: true,
-        message: "Added task",
-        color: "white",
-        textColor: "green",
-        timeout: 1500,
+        message: `Added task ${name}`,
+        color: "green-8",
+        textColor: "white-3",
+        timeout: 1000,
+      });
+    },
+    showConfirmTaskDeleted(name) {
+      this.q.notify({
+        message: `Deleted task: ${name}`,
+        color: "red-8",
+        textColor: "white-3",
+        timeout: 1000,
       });
     },
     showConfirmTaskCompleted(name) {
       this.q.notify({
-        progress: true,
-        message: `Completed task: ${name}!`,
-        color: "white",
-        textColor: "green-5",
-        timeout: 1500,
+        message: `Completed task: ${name}`,
+        color: "green-8",
+        textColor: "white-3",
+        timeout: 1000,
       });
     },
     showConfirmTaskUpdated(name) {
       this.q.notify({
-        progress: true,
         message: `Updated task: ${name}!`,
-        color: "white",
-        textColor: "green-5",
-        timeout: 1500,
+        color: "green-8",
+        textColor: "white-3",
+        timeout: 1000,
       });
     },
     completeTask(task) {
@@ -217,6 +220,14 @@ export default ({
       if (this.todos.length < before) {
         this.tasksDone++;
         this.showConfirmTaskCompleted(task.name);
+      }
+    },
+    deleteTask(task) {
+      const before = this.todos.length;
+      this.todos = this.todos.filter(todo => todo.id !== task.id);
+      if (this.todos.length < before) {
+        this.tasksToday--;
+        this.showConfirmTaskDeleted(task.name);
       }
     },
     duplicateToDo(task) {
@@ -239,7 +250,7 @@ export default ({
       console.log("Putting todo : ", this.taskToEdit);
     },
     addTask(task) {
-      this.showConfirmTaskAdded();
+      this.showConfirmTaskAdded(task.name);
       this.tasksToday++;
       task.id = ++this.id;
       this.todos.push(task);
@@ -252,23 +263,23 @@ export default ({
     },
   },
   computed: {
-    sortedArray(){
+    sortedArray() {
       return [...this.todos].sort((a, b) => {
         return new Date(a.time) - new Date(b.time);
       });
     },
     dayArray() {
       const sorted = [...this.todos].sort((a, b) => {
-          return new Date(a.time) - new Date(b.time);
+        return new Date(a.time) - new Date(b.time);
       });
       const arrays = [];
       let currentArray = [sorted[0]];
       let prevDate;
       let nowDate;
       for (let i = 1; i < sorted.length; i++) {
-        prevDate = date.formatDate(sorted[i - 1].time,"D MMMM YYYY");
-        nowDate = date.formatDate(sorted[i].time,"D MMMM YYYY");
-        if(prevDate !== nowDate){
+        prevDate = date.formatDate(sorted[i - 1].time, "D MMMM YYYY");
+        nowDate = date.formatDate(sorted[i].time, "D MMMM YYYY");
+        if (prevDate !== nowDate) {
           arrays.push({
             day: prevDate,
             array: currentArray
@@ -277,9 +288,9 @@ export default ({
         }
         currentArray.push(sorted[i]);
       }
-      if(currentArray.length > 0) {
+      if (currentArray.length > 0) {
         arrays.push({
-          day:nowDate,
+          day: nowDate,
           array: currentArray
         });
       }

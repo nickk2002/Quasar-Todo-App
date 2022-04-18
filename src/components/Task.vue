@@ -16,7 +16,7 @@ export default ({
       console.log("Marking as done task " + task.name);
       this.animate = true;
       setTimeout(function () {
-        this.$emit("delete", task);
+        this.$emit("complete", task);
       }.bind(this), 1000);
     },
     duplicateTask() {
@@ -24,6 +24,13 @@ export default ({
     },
     sendEditRequest(){
       this.$emit("edit",this.todo);
+    },
+    deleteTask(){
+      console.log("Marking as done task " + this.todo.name);
+      this.animate = true;
+      setTimeout(function () {
+        this.$emit("delete",  this.todo);
+      }.bind(this), 1000);
     }
   },
   computed:{
@@ -84,7 +91,6 @@ export default ({
             <q-item class="row" clickable @click="sendEditRequest" >
               <q-item-section avatar style="min-width: 0;">
                 <q-icon name="edit"/>
-
               </q-item-section>
               <q-item-section>Edit</q-item-section>
             </q-item>
@@ -93,6 +99,12 @@ export default ({
                 <q-icon name="content_copy"/>
               </q-item-section>
               <q-item-section>Duplicate</q-item-section>
+            </q-item>
+            <q-item clickable @click="deleteTask()">
+              <q-item-section avatar style="min-width: 0;">
+                <q-icon name="delete"/>
+              </q-item-section>
+              <q-item-section>Delete</q-item-section>
             </q-item>
           </q-list>
         </q-menu>
